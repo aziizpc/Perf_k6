@@ -1,4 +1,4 @@
-import { chromium } from 'k6/experimental/browser';
+import { browser } from 'k6/experimental/browser';
 
 export const options = {
     scenarios: {
@@ -6,24 +6,18 @@ export const options = {
             executor: 'constant-vus',
             vus: 2,
             duration: '30s',
+            options: {
+                browser: {
+                    type: 'chromium', // Ensure Chromium browser is used
+                    headless: false,    
+                },
+            },
         },
     },
 };
 
 export default async function () {
-    // Launch the browser (Chromium) and create a new context
-    const browser = chromium.launch({ headless: false });
-    const context = browser.newContext();
-
-    // Create a new page
-    const page = await context.newPage();
-
-    // Navigate to Google
-    await page.goto('https://www.google.com');
-
-    // Close the page after actions
-    await page.close();
-
-    // Close the browser after all tests are done
-    await browser.close();
+    const page = await browser.newPage(); // Creates a new page
+    await page.goto('https://www.google.com'); // Navigates to the URL
+    page.close(); // Closes the page after actions are performed
 }
